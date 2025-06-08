@@ -30,6 +30,35 @@ _LIBCPP_PUSH_MACROS
 
 _LIBCPP_BEGIN_NAMESPACE_STD
 
+
+template <class _AlgPolicy, class _Compare, class _RandomAccessIterator>
+inline _LIBCPP_HIDE_FROM_ABI _LIBCPP_CONSTEXPR_SINCE_CXX14
+typename iterator_traits<_RandomAccessIterator>::value_type
+__extract_heap_top(_RandomAccessIterator __first,
+           _RandomAccessIterator __last,
+           _Compare& __comp,
+           typename iterator_traits<_RandomAccessIterator>::difference_type __len) {
+  // Calling `extract_top` on an empty range is undefined behavior.
+  _LIBCPP_ASSERT_PEDANTIC(__len > 0, "The heap given to __extract_heap_top must be non-empty");
+
+  __comp_ref_type<_Compare> __comp_ref = __comp;
+
+  using value_type = typename iterator_traits<_RandomAccessIterator>::value_type;
+  value_type __top             = _IterOps<_AlgPolicy>::__iter_move(__first); // create a hole at __first
+  if (__len > 1) {
+    _RandomAccessIterator __hole = std::__floyd_sift_down<_AlgPolicy>(__first, __comp_ref, __len);
+    --__last;
+
+    if (__hole != __last) {
+      *__hole = _IterOps<_AlgPolicy>::__iter_move(__last);
+      ++__hole;
+      std::__sift_up<_AlgPolicy>(__first, __hole, __comp_ref, __hole - __first);
+    }
+  }
+
+  return __top;
+}
+
 template <class _AlgPolicy, class _Compare, class _RandomAccessIterator>
 inline _LIBCPP_HIDE_FROM_ABI _LIBCPP_CONSTEXPR_SINCE_CXX14 void
 __pop_heap(_RandomAccessIterator __first,
@@ -39,22 +68,11 @@ __pop_heap(_RandomAccessIterator __first,
   // Calling `pop_heap` on an empty range is undefined behavior, but in practice it will be a no-op.
   _LIBCPP_ASSERT_PEDANTIC(__len > 0, "The heap given to pop_heap must be non-empty");
 
-  __comp_ref_type<_Compare> __comp_ref = __comp;
-
   using value_type = typename iterator_traits<_RandomAccessIterator>::value_type;
   if (__len > 1) {
-    value_type __top             = _IterOps<_AlgPolicy>::__iter_move(__first); // create a hole at __first
-    _RandomAccessIterator __hole = std::__floyd_sift_down<_AlgPolicy>(__first, __comp_ref, __len);
+    value_type __top = std::__extract_heap_top<_AlgPolicy>(__first, __last, __comp, __len);
     --__last;
-
-    if (__hole == __last) {
-      *__hole = std::move(__top);
-    } else {
-      *__hole = _IterOps<_AlgPolicy>::__iter_move(__last);
-      ++__hole;
-      *__last = std::move(__top);
-      std::__sift_up<_AlgPolicy>(__first, __hole, __comp_ref, __hole - __first);
-    }
+    *__last = std::move(__top);
   }
 }
 
