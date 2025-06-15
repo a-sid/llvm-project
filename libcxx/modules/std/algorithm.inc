@@ -523,6 +523,14 @@ export namespace std {
     using std::ranges::pop_heap;
   }
 
+#if _LIBCPP_STD_VER >= 26
+  using std::extract_heap_top;
+
+  namespace ranges {
+    using std::ranges::extract_heap_top;
+  }
+#endif
+
   using std::make_heap;
 
   namespace ranges {
