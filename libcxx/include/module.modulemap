@@ -529,6 +529,10 @@ module std [system] {
       header "__algorithm/ranges_equal_range.h"
       export std.functional.ranges_operations
     }
+    module ranges_extract_heap_top {
+      header "__algorithm/ranges_extract_heap_top.h"
+      export std.functional.ranges_operations
+    }
     module ranges_equal {
       header "__algorithm/ranges_equal.h"
       export std.functional.identity

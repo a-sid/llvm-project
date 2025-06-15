@@ -92,6 +92,24 @@ pop_heap(_RandomAccessIterator __first, _RandomAccessIterator __last) {
   std::pop_heap(std::move(__first), std::move(__last), __less<>());
 }
 
+template <class _RandomAccessIterator, class _Compare>
+inline _LIBCPP_HIDE_FROM_ABI _LIBCPP_CONSTEXPR_SINCE_CXX20
+typename iterator_traits<_RandomAccessIterator>::value_type
+extract_heap_top(_RandomAccessIterator __first, _RandomAccessIterator __last, _Compare __comp) {
+  static_assert(std::is_copy_constructible<_RandomAccessIterator>::value, "Iterators must be copy constructible.");
+  static_assert(std::is_copy_assignable<_RandomAccessIterator>::value, "Iterators must be copy assignable.");
+
+  typename iterator_traits<_RandomAccessIterator>::difference_type __len = __last - __first;
+  return std::__extract_heap_top<_ClassicAlgPolicy>(std::move(__first), std::move(__last), __comp, __len);
+}
+
+template <class _RandomAccessIterator>
+inline _LIBCPP_HIDE_FROM_ABI _LIBCPP_CONSTEXPR_SINCE_CXX20
+typename iterator_traits<_RandomAccessIterator>::value_type
+extract_heap_top(_RandomAccessIterator __first, _RandomAccessIterator __last) {
+  return std::extract_heap_top(std::move(__first), std::move(__last), __less<>());
+}
+
 _LIBCPP_END_NAMESPACE_STD
 
 _LIBCPP_POP_MACROS

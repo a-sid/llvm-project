@@ -916,17 +916,16 @@ inline void priority_queue<_Tp, _Container, _Compare>::emplace(_Args&&... __args
 
 template <class _Tp, class _Container, class _Compare>
 inline void priority_queue<_Tp, _Container, _Compare>::pop() {
-  typename iterator_traits<_RandomAccessIterator>::difference_type __len = __last - __first;
-  std::__extract_heap_top<_ClassicAlgPolicy>(c.begin(), c.end(), comp, this->size());
+  std::extract_heap_top(c.begin(), c.end(), comp);
   c.pop_back();
 }
 
 #  if _LIBCPP_STD_VER >= 26
 
 template <class _Tp, class _Container, class _Compare>
-_Tp priority_queue<_Tp, _Container, _Compare>::extract_top() {
+inline _Tp priority_queue<_Tp, _Container, _Compare>::extract_top() {
   _LIBCPP_ASSERT_PEDANTIC(!c.empty(), "The queue should be non-empty to extract a value");
-  _Tp __top = std::__extract_heap_top<_ClassicAlgPolicy>(c.begin(), c.end(), comp, this->size());
+  _Tp __top = std::extract_heap_top(c.begin(), c.end(), comp);
   c.pop_back();
   return __top;
 }

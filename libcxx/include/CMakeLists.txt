@@ -90,6 +90,7 @@ set(files
   __algorithm/ranges_ends_with.h
   __algorithm/ranges_equal.h
   __algorithm/ranges_equal_range.h
+  __algorithm/ranges_extract_heap_top.h
   __algorithm/ranges_fill.h
   __algorithm/ranges_fill_n.h
   __algorithm/ranges_find.h
@@ -1153,6 +1154,7 @@ set(files
   __cxx03/__algorithm/ranges_ends_with.h
   __cxx03/__algorithm/ranges_equal.h
   __cxx03/__algorithm/ranges_equal_range.h
+  __cxx03/__algorithm/ranges_extract_heap_top.h
   __cxx03/__algorithm/ranges_fill.h
   __cxx03/__algorithm/ranges_fill_n.h
   __cxx03/__algorithm/ranges_find.h
