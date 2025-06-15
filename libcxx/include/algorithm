@@ -367,6 +367,17 @@ namespace ranges {
   template<random_access_iterator I, sentinel_for<I> S, class Comp = ranges::less,
           class Proj = identity>
     requires sortable<I, Comp, Proj>
+    constexpr iterator_traits<I>::value_type
+      ranges::extract_heap_top(I first, S last, Comp comp = {}, Proj proj = {});                    // since C++26
+
+  template<random_access_range R, class Comp = ranges::less, class Proj = identity>
+    requires sortable<iterator_t<R>, Comp, Proj>
+    constexpr iterator_traits<iterator_t<R>>::value_type
+      ranges::extract_heap_top(R&& r, Comp comp = {}, Proj proj = {});                              // since C++26
+
+  template<random_access_iterator I, sentinel_for<I> S, class Comp = ranges::less,
+          class Proj = identity>
+    requires sortable<I, Comp, Proj>
     constexpr I
       ranges::make_heap(I first, S last, Comp comp = {}, Proj proj = {});                   // since C++20
 
@@ -1685,6 +1696,15 @@ template <class RandomAccessIterator, class Compare>
     pop_heap(RandomAccessIterator first, RandomAccessIterator last, Compare comp);
 
 template <class RandomAccessIterator>
+    constexpr
+    iterator_traits_t<RandomAccessIterator>::value_type  // constexpr since C++26
+    extract_heap_top(RandomAccessIterator first, RandomAccessIterator last);
+
+template <class RandomAccessIterator, class Compare>
+    constexpr iterator_traits_t<RandomAccessIterator>::value_type  // constexpr since C++26
+    extract_heap_top(RandomAccessIterator first, RandomAccessIterator last, Compare comp);
+
+template <class RandomAccessIterator>
     constexpr void                                   // constexpr since C++20
     make_heap(RandomAccessIterator first, RandomAccessIterator last);
 
@@ -2037,6 +2057,10 @@ template <class BidirectionalIterator, class Compare>
 #    include <__algorithm/ranges_fold.h>
 #    include <__algorithm/ranges_starts_with.h>
 #  endif // _LIBCPP_STD_VER >= 23
+
+#if _LIBCPP_STD_VER >= 26
+#    include <__algorithm/ranges_extract_heap_top.h>
+#endif // _LIBCPP_STD_VER >= 26
 
 #  include <version>
 
