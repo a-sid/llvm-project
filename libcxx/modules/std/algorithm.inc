@@ -527,14 +527,6 @@ export namespace std {
     using std::ranges::pop_heap;
   }
 
-#if _LIBCPP_STD_VER >= 26
-  using std::extract_heap_top;
-
-  namespace ranges {
-    using std::ranges::extract_heap_top;
-  }
-#endif
-
   using std::make_heap;
 
   namespace ranges {
@@ -558,6 +550,20 @@ export namespace std {
   namespace ranges {
     using std::ranges::is_heap_until;
   }
+
+#if _LIBCPP_STD_VER >= 26
+  using std::displace_heap;
+
+  namespace ranges {
+    using std::ranges::displace_heap;
+  }
+
+  using std::remove_heap;
+
+  namespace ranges {
+    using std::ranges::remove_heap;
+  }
+#endif
 
   // [alg.min.max], minimum and maximum
   using std::min;
