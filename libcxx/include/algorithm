@@ -2094,7 +2094,7 @@ template <class BidirectionalIterator, class Compare>
 #  endif // _LIBCPP_STD_VER >= 23
 
 #if _LIBCPP_STD_VER >= 26
-#    include <__algorithm/ranges_extract_heap_top.h>
+#    include <__algorithm/ranges_displace_heap.h>
 #endif // _LIBCPP_STD_VER >= 26
 
 #  include <version>
