@@ -13,7 +13,7 @@
 
 // <algorithm>
 
-// Calling `ranges::extract_heap_top` on an empty range is invalid.
+// Calling `ranges::displace_heap` on an empty range is invalid.
 
 #include <algorithm>
 
@@ -23,8 +23,8 @@
 int main(int, char**) {
   std::array<int, 0> a;
 
-  TEST_LIBCPP_ASSERT_FAILURE(std::ranges::extract_heap_top(a.begin(), a.end()), "The heap given to extract_heap_top must be non-empty");
-  TEST_LIBCPP_ASSERT_FAILURE(std::ranges::extract_heap_top(a), "The heap given to extract_heap_top must be non-empty");
+  TEST_LIBCPP_ASSERT_FAILURE(std::ranges::displace_heap(a.begin(), a.end()), "The heap given to displace_heap must be non-empty");
+  TEST_LIBCPP_ASSERT_FAILURE(std::ranges::displace_heap(a), "The heap given to displace_heap must be non-empty");
 
   return 0;
 }

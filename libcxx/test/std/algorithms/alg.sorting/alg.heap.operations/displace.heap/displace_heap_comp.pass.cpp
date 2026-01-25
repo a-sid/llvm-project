@@ -13,7 +13,7 @@
 // template<RandomAccessIterator Iter>
 //   requires ShuffleIterator<Iter> && LessThanComparable<Iter::value_type>
 //   constexpr Iter::value_type
-//   extract_heap_top(Iter first, Iter last, Compare comp);
+//   displace_heap(Iter first, Iter last, Compare comp);
 
 #include <algorithm>
 #include <cassert>
@@ -28,11 +28,11 @@ TEST_CONSTEXPR_CXX26 bool test()
 {
     T input[] = {1, 2, 5, 4, 3};
     assert(std::is_heap(input, input + 5, std::greater<T>()));
-    T val = std::extract_heap_top(Iter(input), Iter(input + 5), std::greater<T>()); assert(val == 1);
-    val = std::extract_heap_top(Iter(input), Iter(input + 4), std::greater<T>()); assert(val == 2);
-    val = std::extract_heap_top(Iter(input), Iter(input + 3), std::greater<T>()); assert(val == 3);
-    val = std::extract_heap_top(Iter(input), Iter(input + 2), std::greater<T>()); assert(val == 4);
-    val = std::extract_heap_top(Iter(input), Iter(input + 1), std::greater<T>()); assert(val == 5);
+    T val = std::displace_heap(Iter(input), Iter(input + 5), std::greater<T>()); assert(val == 1);
+    val = std::displace_heap(Iter(input), Iter(input + 4), std::greater<T>()); assert(val == 2);
+    val = std::displace_heap(Iter(input), Iter(input + 3), std::greater<T>()); assert(val == 3);
+    val = std::displace_heap(Iter(input), Iter(input + 2), std::greater<T>()); assert(val == 4);
+    val = std::displace_heap(Iter(input), Iter(input + 1), std::greater<T>()); assert(val == 5);
     return true;
 }
 

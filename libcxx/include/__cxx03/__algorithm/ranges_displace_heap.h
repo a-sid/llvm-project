@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef _LIBCPP___CXX03___ALGORITHM_RANGES_EXTRACT_HEAP_TOP_H
-#define _LIBCPP___CXX03___ALGORITHM_RANGES_EXTRACT_HEAP_TOP_H
+#ifndef _LIBCPP___CXX03___ALGORITHM_RANGES_DISPLACE_HEAP_H
+#define _LIBCPP___CXX03___ALGORITHM_RANGES_DISPLACE_HEAP_H
 
 #include <__cxx03/__algorithm/iterator_operations.h>
 #include <__cxx03/__algorithm/make_projected.h>
@@ -41,17 +41,17 @@ _LIBCPP_BEGIN_NAMESPACE_STD
 
 namespace ranges {
 
-struct __extract_heap_top {
+struct __displace_heap{
 
   template <class _Iter, class _Sent, class _Comp, class _Proj>
   _LIBCPP_HIDE_FROM_ABI constexpr static
   typename iterator_traits<_Iter>::value_type
-  __extract_heap_top_fn_impl(_Iter __first, _Sent __last, _Comp& __comp, _Proj& __proj) {
+  __displace_heap_fn_impl(_Iter __first, _Sent __last, _Comp& __comp, _Proj& __proj) {
     auto __last_iter = ranges::next(__first, __last);
     auto __len       = __last_iter - __first;
 
     auto&& __projected_comp = std::__make_projected(__comp, __proj);
-    return std::__extract_heap_top<_RangeAlgPolicy>(std::move(__first), __last_iter, __projected_comp, __len);
+    return std::__displace_heap<_RangeAlgPolicy>(std::move(__first), __last_iter, __projected_comp, __len);
   }
 
   template <random_access_iterator _Iter, sentinel_for<_Iter> _Sent, class _Comp = ranges::less, class _Proj = identity>
@@ -59,7 +59,7 @@ struct __extract_heap_top {
   _LIBCPP_HIDE_FROM_ABI constexpr 
   typename iterator_traits<_Iter>::value_type
   operator()(_Iter __first, _Sent __last, _Comp __comp = {}, _Proj __proj = {}) const {
-    return __extract_heap_top_fn_impl(std::move(__first), std::move(__last), __comp, __proj);
+    return __displace_heap_fn_impl(std::move(__first), std::move(__last), __comp, __proj);
   }
 
   template <random_access_range _Range, class _Comp = ranges::less, class _Proj = identity>
@@ -67,12 +67,12 @@ struct __extract_heap_top {
   _LIBCPP_HIDE_FROM_ABI constexpr
   typename iterator_traits<iterator_t<_Range>>::value_type
   operator()(_Range&& __r, _Comp __comp = {}, _Proj __proj = {}) const {
-    return __extract_heap_top_fn_impl(ranges::begin(__r), ranges::end(__r), __comp, __proj);
+    return __displace_heap_fn_impl(ranges::begin(__r), ranges::end(__r), __comp, __proj);
   }
 };
 
 inline namespace __cpo {
-inline constexpr auto extract_heap_top = __extract_heap_top{};
+inline constexpr auto displace_heap = __displace_heap{};
 
 } // namespace __cpo
 } // namespace ranges
@@ -83,4 +83,4 @@ _LIBCPP_END_NAMESPACE_STD
 
 _LIBCPP_POP_MACROS
 
-#endif // _LIBCPP___CXX03___ALGORITHM_RANGES_EXTRACT_HEAP_TOP_H
+#endif // _LIBCPP___CXX03___ALGORITHM_RANGES_DISPLACE_HEAP_H

@@ -65,7 +65,7 @@ __displace_heap(_RandomAccessIterator __first,
 
   using value_type = typename iterator_traits<_RandomAccessIterator>::value_type;
   value_type __top = _IterOps<_AlgPolicy>::__iter_move(__first); // create a hole at __first
-  __remove_heap(std::move(__first), std::move(__last), __comp, __len);
+  std::__remove_heap<_AlgPolicy>(std::move(__first), std::move(__last), __comp, __len);
   return __top;
 }
 

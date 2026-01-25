@@ -12,7 +12,7 @@
 
 // priority_queue();
 
-// value_type extract_top();
+// value_type displace_top();
 
 #include <queue>
 #include <cassert>
@@ -27,9 +27,9 @@ int main(int, char**)
     q.push(3);
     assert(q.top() == 3);
     q.push(2);
-    assert(q.extract_top() == 3);
-    assert(q.extract_top() == 2);
-    assert(q.extract_top() == 1);
+    assert(q.displace_top() == 3);
+    assert(q.displace_top() == 2);
+    assert(q.displace_top() == 1);
     assert(q.empty());
 
   return 0;

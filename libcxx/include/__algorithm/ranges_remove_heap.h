@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef _LIBCPP___ALGORITHM_RANGES_DISPLACE_HEAP_H
-#define _LIBCPP___ALGORITHM_RANGES_DISPLACE_HEAP_H
+#ifndef _LIBCPP___ALGORITHM_RANGES_REMOVE_HEAP_H
+#define _LIBCPP___ALGORITHM_RANGES_REMOVE_HEAP_H
 
 #include <__algorithm/iterator_operations.h>
 #include <__algorithm/make_projected.h>
@@ -35,52 +35,48 @@
 _LIBCPP_PUSH_MACROS
 #include <__undef_macros>
 
-#if _LIBCPP_STD_VER >= 26
+#if _LIBCPP_STD_VER >= 20
 
 _LIBCPP_BEGIN_NAMESPACE_STD
 
 namespace ranges {
-
-struct __displace_heap {
-
+struct __pop_heap {
   template <class _Iter, class _Sent, class _Comp, class _Proj>
-  _LIBCPP_HIDE_FROM_ABI constexpr static
-  typename iterator_traits<_Iter>::value_type
-  __displace_heap_fn_impl(_Iter __first, _Sent __last, _Comp& __comp, _Proj& __proj) {
+  _LIBCPP_HIDE_FROM_ABI constexpr static _Iter
+  __pop_heap_fn_impl(_Iter __first, _Sent __last, _Comp& __comp, _Proj& __proj) {
     auto __last_iter = ranges::next(__first, __last);
     auto __len       = __last_iter - __first;
 
     auto&& __projected_comp = std::__make_projected(__comp, __proj);
-    return std::__displace_heap<_RangeAlgPolicy>(std::move(__first), std::move(__last_iter), __projected_comp, __len);
+    std::__remove_heap<_RangeAlgPolicy>(std::move(__first), __last_iter, __projected_comp, __len);
+
+    return __last;
   }
 
   template <random_access_iterator _Iter, sentinel_for<_Iter> _Sent, class _Comp = ranges::less, class _Proj = identity>
     requires sortable<_Iter, _Comp, _Proj>
-  _LIBCPP_HIDE_FROM_ABI constexpr 
-  typename iterator_traits<_Iter>::value_type
+  _LIBCPP_HIDE_FROM_ABI constexpr _Iter
   operator()(_Iter __first, _Sent __last, _Comp __comp = {}, _Proj __proj = {}) const {
-    return __displace_heap_fn_impl(std::move(__first), std::move(__last), __comp, __proj);
+    return __remove_heap_fn_impl(std::move(__first), std::move(__last), __comp, __proj);
   }
 
   template <random_access_range _Range, class _Comp = ranges::less, class _Proj = identity>
     requires sortable<iterator_t<_Range>, _Comp, _Proj>
-  _LIBCPP_HIDE_FROM_ABI constexpr
-  typename iterator_traits<iterator_t<_Range>>::value_type
+  _LIBCPP_HIDE_FROM_ABI constexpr borrowed_iterator_t<_Range>
   operator()(_Range&& __r, _Comp __comp = {}, _Proj __proj = {}) const {
-    return __displace_heap_fn_impl(ranges::begin(__r), ranges::end(__r), __comp, __proj);
+    return __remove_heap_fn_impl(ranges::begin(__r), ranges::end(__r), __comp, __proj);
   }
 };
 
 inline namespace __cpo {
-inline constexpr auto displace_heap = __displace_heap{};
-
+inline constexpr auto remove_heap = __remove_heap{};
 } // namespace __cpo
 } // namespace ranges
 
 _LIBCPP_END_NAMESPACE_STD
 
-#endif // _LIBCPP_STD_VER >= 26
+#endif // _LIBCPP_STD_VER >= 20
 
 _LIBCPP_POP_MACROS
 
-#endif // _LIBCPP___ALGORITHM_RANGES_DISPLACE_HEAP_H
+#endif // _LIBCPP___ALGORITHM_RANGES_REMOVE_HEAP_H

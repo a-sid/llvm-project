@@ -14,12 +14,12 @@
 //         class Proj = identity>
 //   requires sortable<I, Comp, Proj>
 //   constexpr typename I::value_type
-//     ranges::extract_heap_top(I first, S last, Comp comp = {}, Proj proj = {});                    // since C++26
+//     ranges::displace_heap(I first, S last, Comp comp = {}, Proj proj = {});                    // since C++26
 //
 // template<random_access_range R, class Comp = ranges::less, class Proj = identity>
 //   requires sortable<iterator_t<R>, Comp, Proj>
 //   constexpr typename borrowed_iterator_t<R>::value_type
-//     ranges::extract_heap_top(R&& r, Comp comp = {}, Proj proj = {});                              // since C++26
+//     ranges::displace_heap(R&& r, Comp comp = {}, Proj proj = {});                              // since C++26
 
 #include <algorithm>
 #include <array>
@@ -76,7 +76,7 @@ constexpr void test_one(const std::array<int, N> input, std::array<int, N> expec
     auto b = Iter(heapified.data());
     auto e = Sent(Iter(heapified.data() + heapified.size()));
 
-    int top = std::ranges::extract_heap_top(b, e);
+    int top = std::ranges::displace_heap(b, e);
     verify_heap(heapified, top, expected);
   }
 
@@ -86,7 +86,7 @@ constexpr void test_one(const std::array<int, N> input, std::array<int, N> expec
     auto e = Sent(Iter(heapified.data() + heapified.size()));
     auto range = std::ranges::subrange(b, e);
 
-    int top = std::ranges::extract_heap_top(range);
+    int top = std::ranges::displace_heap(range);
     verify_heap(heapified, top, expected);
   }
 }
@@ -129,7 +129,7 @@ constexpr bool test() {
     auto expected_top = *std::max_element(input.begin(), input.end(), comp);
     {
       auto in = input;
-      auto top = std::ranges::extract_heap_top(in.begin(), in.end(), comp);
+      auto top = std::ranges::displace_heap(in.begin(), in.end(), comp);
       // Last input element is in unspecified state.
       assert(std::equal(in.begin(), in.end() - 1, expected.begin()));
       assert(top == expected_top);
@@ -138,7 +138,7 @@ constexpr bool test() {
 
     {
       auto in = input;
-      auto top = std::ranges::extract_heap_top(in, comp);
+      auto top = std::ranges::displace_heap(in, comp);
       // Last input element is in unspecified state.
       assert(std::equal(in.begin(), in.end() - 1, expected.begin()));
       assert(top == expected_top);
@@ -156,13 +156,13 @@ constexpr bool test() {
     std::array expected = {A{2}, A{1}, A{3}};
     {
       auto in = input;
-      auto last = std::ranges::extract_heap_top(in.begin(), in.end(), {}, &A::a);
+      auto last = std::ranges::displace_heap(in.begin(), in.end(), {}, &A::a);
       verify_heap(in, last, expected);
     }
 
     {
       auto in = input;
-      auto last = std::ranges::extract_heap_top(in, {}, &A::a);
+      auto last = std::ranges::displace_heap(in, {}, &A::a);
       verify_heap(in, last, expected);
     }
   }
@@ -182,22 +182,22 @@ constexpr bool test() {
     std::array expected = {A{2}, A{1}, A{3}};
     {
       auto in = input;
-      auto last = std::ranges::extract_heap_top(in.begin(), in.end(), &A::comparator, &A::projection);
+      auto last = std::ranges::displace_heap(in.begin(), in.end(), &A::comparator, &A::projection);
       verify_heap(in, last, expected);
     }
 
     {
       auto in = input;
-      auto last = std::ranges::extract_heap_top(in, &A::comparator, &A::projection);
+      auto last = std::ranges::displace_heap(in, &A::comparator, &A::projection);
       verify_heap(in, last, expected);
     }
   }
 
   { // `std::ranges::dangling` is returned.
     // [[maybe_unused]] std::same_as<std::ranges::dangling> decltype(auto) result =
-    //     std::ranges::extract_heap_top(std::array{2, 1, 3});
+    //     std::ranges::displace_heap(std::array{2, 1, 3});
     decltype(auto) result =
-        std::ranges::extract_heap_top(std::array{1, 3, 2});
+        std::ranges::displace_heap(std::array{1, 3, 2});
     assert(result == 1);
   }
 
