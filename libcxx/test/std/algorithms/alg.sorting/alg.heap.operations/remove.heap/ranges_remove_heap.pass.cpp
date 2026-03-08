@@ -23,6 +23,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cassert>
 #include <concepts>
 #include <functional>
 #include <memory>
@@ -37,15 +38,15 @@ using BadComparator = ComparatorNotCopyable<int*>;
 static_assert(!std::sortable<int*, BadComparator>);
 
 template <class Iter, class Sent = sentinel_wrapper<Iter>, class Comp = std::ranges::less>
-concept HasRemoveHeapTopIt = requires(Iter first, Sent last, Comp comp) { std::ranges::make_heap(first, last, comp); };
+concept HasRemoveHeapIt = requires(Iter first, Sent last, Comp comp) { std::ranges::make_heap(first, last, comp); };
 
-static_assert(HasRemoveHeapTopIt<int*>);
-static_assert(!HasRemoveHeapTopIt<RandomAccessIteratorNotDerivedFrom>);
-static_assert(!HasRemoveHeapTopIt<RandomAccessIteratorBadIndex>);
-static_assert(!HasRemoveHeapTopIt<int*, SentinelForNotSemiregular>);
-static_assert(!HasRemoveHeapTopIt<int*, SentinelForNotWeaklyEqualityComparableWith>);
-static_assert(!HasRemoveHeapTopIt<int*, int*, BadComparator>);
-static_assert(!HasRemoveHeapTopIt<const int*>); // Doesn't satisfy `sortable`.
+static_assert(HasRemoveHeapIt<int*>);
+static_assert(!HasRemoveHeapIt<RandomAccessIteratorNotDerivedFrom>);
+static_assert(!HasRemoveHeapIt<RandomAccessIteratorBadIndex>);
+static_assert(!HasRemoveHeapIt<int*, SentinelForNotSemiregular>);
+static_assert(!HasRemoveHeapIt<int*, SentinelForNotWeaklyEqualityComparableWith>);
+static_assert(!HasRemoveHeapIt<int*, int*, BadComparator>);
+static_assert(!HasRemoveHeapIt<const int*>); // Doesn't satisfy `sortable`.
 
 template <class Range, class Comp = std::ranges::less>
 concept HasRemoveHeapR = requires(Range range, Comp comp) { std::ranges::make_heap(range, comp); };
@@ -60,9 +61,9 @@ static_assert(!HasRemoveHeapR<UncheckedRange<const int*>>); // Doesn't satisfy `
 
 template <std::size_t N, class T, class Iter>
 constexpr void verify_heap(const std::array<T, N>& heapified, Iter last, std::array<T, N> expected) {
-  assert(result == heapified.end() - 1);
-  assert(std::equal(heapified.begin(), last, expected.begin()));
-  assert(std::is_heap(heapified.begin(), last));
+  assert(std::equal(heapified.begin(), heapified.end() - 1, expected.begin()));
+  assert(std::to_address(base(last)) == heapified.data() + heapified.size());
+  assert(std::is_heap(heapified.begin(), heapified.end() - 1));
 }
 
 template <class Iter, class Sent, std::size_t N>
@@ -85,7 +86,7 @@ constexpr void test_one(const std::array<int, N> input, std::array<int, N> expec
     auto e = Sent(Iter(heapified.data() + heapified.size()));
     auto range = std::ranges::subrange(b, e);
 
-    auto last = std::ranges::displace_heap(range);
+    auto last = std::ranges::remove_heap(range);
     verify_heap(heapified, last, expected);
   }
 }
@@ -95,13 +96,13 @@ constexpr void test_iterators_2() {
   // 1-element sequence.
   test_one<Iter, Sent, 1>({1}, {1});
   // 2-element sequence.
-  test_one<Iter, Sent, 2>({2, 1}, {1, 2});
+  test_one<Iter, Sent, 2>({2, 1}, {1, 1});
   // 3-element sequence.
-  test_one<Iter, Sent, 3>({3, 1, 2}, {2, 1, 3});
+  test_one<Iter, Sent, 3>({3, 1, 2}, {2, 1, 2});
   // Longer sequence.
-  test_one<Iter, Sent, 8>({11, 8, 5, 6, 4, 3, 2, 1}, {8, 6, 5, 1, 4, 3, 2, 11});
+  test_one<Iter, Sent, 8>({11, 8, 5, 6, 4, 3, 2, 1}, {8, 6, 5, 1, 4, 3, 2, 1});
   // Longer sequence with duplicates.
-  test_one<Iter, Sent, 8>({8, 8, 6, 6, 1, 2, 2, 3}, {8, 6, 6, 3, 1, 2, 2, 8});
+  test_one<Iter, Sent, 8>({8, 8, 6, 6, 1, 2, 2, 3}, {8, 6, 6, 3, 1, 2, 2, 3});
   // All elements are the same.
   test_one<Iter, Sent, 4>({1, 1, 1, 1}, {1, 1, 1, 1});
 }
@@ -128,7 +129,7 @@ constexpr bool test() {
     {
       auto in = input;
       auto last = std::ranges::remove_heap(in.begin(), in.end(), comp);
-      assert(last == in.end() - 1);
+      assert(last == in.end());
       // Last input element is in unspecified state.
       assert(std::equal(in.begin(), last, expected.begin()));
       assert(std::is_heap(in.begin(), last, comp));
@@ -137,7 +138,7 @@ constexpr bool test() {
     {
       auto in = input;
       auto last = std::ranges::remove_heap(in, comp);
-      assert(last == in.end() - 1);
+      assert(last == in.end());
       // Last input element is in unspecified state.
       assert(std::equal(in.begin(), last, expected.begin()));
       assert(std::is_heap(in.begin(), last, comp));
@@ -186,7 +187,7 @@ constexpr bool test() {
 
     {
       auto in = input;
-      auto last = std::ranges::displace_heap(in, &A::comparator, &A::projection);
+      auto last = std::ranges::remove_heap(in, &A::comparator, &A::projection);
       verify_heap(in, last, expected);
     }
   }
@@ -194,7 +195,7 @@ constexpr bool test() {
   { // `std::ranges::dangling` is returned.
     // [[maybe_unused]] std::same_as<std::ranges::dangling> decltype(auto) result =
     //     std::ranges::remove_heap(std::array{2, 1, 3});
-    decltype(auto) result =
+    [[maybe_unused]] decltype(auto) result =
         std::ranges::remove_heap(std::array{1, 3, 2});
   }
 

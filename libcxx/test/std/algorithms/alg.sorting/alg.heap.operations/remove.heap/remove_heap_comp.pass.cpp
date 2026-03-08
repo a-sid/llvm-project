@@ -28,11 +28,11 @@ TEST_CONSTEXPR_CXX26 bool test()
 {
     T input[] = {1, 2, 5, 4, 3};
     assert(std::is_heap(input, input + 5, std::greater<T>()));
-    std::remove_heap(Iter(input), Iter(input + 5)); assert(input[0] == 2);
-    std::remove_heap(Iter(input), Iter(input + 4)); assert(input[0] == 3);
-    std::remove_heap(Iter(input), Iter(input + 3)); assert(input[0] == 4);
-    std::remove_heap(Iter(input), Iter(input + 2)); assert(input[0] == 5);
-    std::remove_heap(Iter(input), Iter(input + 1)); assert(input[0] == 5);
+    std::remove_heap(Iter(input), Iter(input + 5), std::greater<T>()); assert(input[0] == 2);
+    std::remove_heap(Iter(input), Iter(input + 4), std::greater<T>()); assert(input[0] == 3);
+    std::remove_heap(Iter(input), Iter(input + 3), std::greater<T>()); assert(input[0] == 4);
+    std::remove_heap(Iter(input), Iter(input + 2), std::greater<T>()); assert(input[0] == 5);
+    std::remove_heap(Iter(input), Iter(input + 1), std::greater<T>()); assert(input[0] == 5);
     return true;
 }
 

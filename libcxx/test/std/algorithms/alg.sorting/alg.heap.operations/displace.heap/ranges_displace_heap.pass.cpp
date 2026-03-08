@@ -23,6 +23,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cassert>
 #include <concepts>
 #include <functional>
 #include <memory>
@@ -37,15 +38,15 @@ using BadComparator = ComparatorNotCopyable<int*>;
 static_assert(!std::sortable<int*, BadComparator>);
 
 template <class Iter, class Sent = sentinel_wrapper<Iter>, class Comp = std::ranges::less>
-concept HasExtractHeapTopIt = requires(Iter first, Sent last, Comp comp) { std::ranges::make_heap(first, last, comp); };
+concept HasDisplaceHeapIt = requires(Iter first, Sent last, Comp comp) { std::ranges::make_heap(first, last, comp); };
 
-static_assert(HasExtractHeapTopIt<int*>);
-static_assert(!HasExtractHeapTopIt<RandomAccessIteratorNotDerivedFrom>);
-static_assert(!HasExtractHeapTopIt<RandomAccessIteratorBadIndex>);
-static_assert(!HasExtractHeapTopIt<int*, SentinelForNotSemiregular>);
-static_assert(!HasExtractHeapTopIt<int*, SentinelForNotWeaklyEqualityComparableWith>);
-static_assert(!HasExtractHeapTopIt<int*, int*, BadComparator>);
-static_assert(!HasExtractHeapTopIt<const int*>); // Doesn't satisfy `sortable`.
+static_assert(HasDisplaceHeapIt<int*>);
+static_assert(!HasDisplaceHeapIt<RandomAccessIteratorNotDerivedFrom>);
+static_assert(!HasDisplaceHeapIt<RandomAccessIteratorBadIndex>);
+static_assert(!HasDisplaceHeapIt<int*, SentinelForNotSemiregular>);
+static_assert(!HasDisplaceHeapIt<int*, SentinelForNotWeaklyEqualityComparableWith>);
+static_assert(!HasDisplaceHeapIt<int*, int*, BadComparator>);
+static_assert(!HasDisplaceHeapIt<const int*>); // Doesn't satisfy `sortable`.
 
 template <class Range, class Comp = std::ranges::less>
 concept HasExtractHeapTopR = requires(Range range, Comp comp) { std::ranges::make_heap(range, comp); };
@@ -62,7 +63,7 @@ template <std::size_t N, class T>
 constexpr void verify_heap(const std::array<T, N>& heapified, T extracted, std::array<T, N> expected) {
   assert(std::equal(heapified.begin(), heapified.end() - 1, expected.begin()));
   assert(std::is_heap(heapified.begin(), heapified.end() - 1));
-  auto expected_top= *std::max_element(expected.begin(), expected.end());
+  auto expected_top = *std::max_element(expected.begin(), expected.end());
   assert(expected_top == extracted);
 }
 

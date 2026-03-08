@@ -35,22 +35,21 @@
 _LIBCPP_PUSH_MACROS
 #include <__undef_macros>
 
-#if _LIBCPP_STD_VER >= 20
+#if _LIBCPP_STD_VER >= 26
 
 _LIBCPP_BEGIN_NAMESPACE_STD
 
 namespace ranges {
-struct __pop_heap {
+struct __remove_heap {
   template <class _Iter, class _Sent, class _Comp, class _Proj>
   _LIBCPP_HIDE_FROM_ABI constexpr static _Iter
-  __pop_heap_fn_impl(_Iter __first, _Sent __last, _Comp& __comp, _Proj& __proj) {
+  __remove_heap_fn_impl(_Iter __first, _Sent __last, _Comp& __comp, _Proj& __proj) {
     auto __last_iter = ranges::next(__first, __last);
     auto __len       = __last_iter - __first;
 
     auto&& __projected_comp = std::__make_projected(__comp, __proj);
     std::__remove_heap<_RangeAlgPolicy>(std::move(__first), __last_iter, __projected_comp, __len);
-
-    return __last;
+    return __last_iter;
   }
 
   template <random_access_iterator _Iter, sentinel_for<_Iter> _Sent, class _Comp = ranges::less, class _Proj = identity>
@@ -75,7 +74,7 @@ inline constexpr auto remove_heap = __remove_heap{};
 
 _LIBCPP_END_NAMESPACE_STD
 
-#endif // _LIBCPP_STD_VER >= 20
+#endif // _LIBCPP_STD_VER >= 26
 
 _LIBCPP_POP_MACROS
 
