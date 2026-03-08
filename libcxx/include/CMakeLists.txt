@@ -92,6 +92,7 @@ set(files
   __algorithm/ranges_ends_with.h
   __algorithm/ranges_equal.h
   __algorithm/ranges_equal_range.h
+  __algorithm/ranges_displace_heap.h
   __algorithm/ranges_fill.h
   __algorithm/ranges_fill_n.h
   __algorithm/ranges_find.h
@@ -141,6 +142,7 @@ set(files
   __algorithm/ranges_remove.h
   __algorithm/ranges_remove_copy.h
   __algorithm/ranges_remove_copy_if.h
+  __algorithm/ranges_remove_heap.h
   __algorithm/ranges_remove_if.h
   __algorithm/ranges_replace.h
   __algorithm/ranges_replace_copy.h
